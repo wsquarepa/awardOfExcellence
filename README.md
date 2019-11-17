@@ -1,3 +1,0 @@
-# awardOfExcellence
-# awardOfExcellence
-# awardOfExcellence
