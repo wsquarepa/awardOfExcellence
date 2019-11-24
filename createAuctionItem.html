@@ -4,24 +4,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-
         .wrapper {
             text-align: center;
         }
 
         .disabled {
-            opacity: 0.6;
+            opacity: 0.2;
             cursor: not-allowed;
         }
 
-        .buttonSpan {
+        .button {
             display: inline-block;
             border-radius: 4px;
             background-color: #f4511e;
             border: none;
             color: #FFFFFF;
             text-align: center;
-            font-size: 28px;
+            font-size: 18px;
             padding: 20px;
             width: 200px;
             transition: all 0.5s;
@@ -29,14 +28,14 @@
             margin: 5px;
         }
 
-        .buttonSpan span {
+        .button span {
             cursor: pointer;
             display: inline-block;
             position: relative;
             transition: 0.5s;
         }
 
-        .buttonSpan span:after {
+        .button span:after {
             content: '\00bb';
             position: absolute;
             opacity: 0;
@@ -45,11 +44,11 @@
             transition: 0.5s;
         }
 
-        .buttonSpan:hover span {
+        .button:hover span {
             padding-right: 25px;
         }
 
-        .buttonSpan:hover span:after {
+        .button:hover span:after {
             opacity: 1;
             right: 0;
         }
@@ -66,30 +65,47 @@
             font-family: Arial;
         }
 
+        .card {
+            /* Add shadows to create the "card" effect */
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            text-align: center;
+        }
+
+            /* On mouse-over, add a deeper shadow */
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+        }
+
+            /* Add some padding inside the card container */
+        .container {
+            padding: 2px 16px;
+            font-size: 25px
+        }
+
     </style>
 </head>
-
-
-<!-- <body style="background-color:#0058b6"> -->
-
 <script>
     confirm("Still working on it...")
     location.href = "index.html"
 </script>
 
-<h1 align="center">Welcome to Pacific Academy Auction Site!</h1>
-<h3 align="center"> You can trade and buy stuff here!</h3>
+<h1 contenteditable="true">Create an auction item!</h1>
 
 
-<div class="wrapper">
-    <button class="buttonSpan" style="vertical-align:middle" onclick="location.href = 'viewAuctionItems.html';"><span>Let's Go!</span></button>
-</div>
+<form action="submitToServer()">
+    Item Name: <input type="text" name="name" placeholder="Name" required> <br>
+    Item Discription: <textarea type="text" name="description" placeholder="Description" required> </textarea> <br>
+    Item Image (if applicable): <input type="file" name="image" placeholder="Image" required> <br>
+    <button class="button" type="submit"><span>Submit!</span></button>
+</form>
 
-<center>
-    <img src="auction.png">
-</center>
-<!-- Copy this button for button:
+<script>
+    function submitToServer() {
+        location.href = "viewAuctionItems.html"
+    }
+</script>
 
-<button class="buttonSpan" style="vertical-align:middle"><span>ARROW!!!</span></button>
-
-END -->
+<footer>
+    <small>The header is editable...</small>
+</footer>
