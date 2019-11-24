@@ -85,10 +85,6 @@
 
     </style>
 </head>
-<script>
-    confirm("Still working on it...")
-    location.href = "index.html"
-</script>
 
 <h1 contenteditable="true">Create an auction item!</h1>
 
@@ -96,7 +92,9 @@
 <form action="submitToServer()">
     Item Name: <input type="text" name="name" placeholder="Name" required> <br>
     Item Discription: <textarea type="text" name="description" placeholder="Description" required> </textarea> <br>
-    Item Image (if applicable): <input type="file" name="image" placeholder="Image" required> <br>
+    Item Image (if applicable): <input type="file" name="image" placeholder="Image" id="image" onchange="previewFile()"> 
+    <br>
+    <img id="imageHolder" src="" height="200" placeholder="Your image appears here.">  <br>
     <button class="button" type="submit"><span>Submit!</span></button>
 </form>
 
@@ -104,8 +102,30 @@
     function submitToServer() {
         location.href = "viewAuctionItems.html"
     }
+
+    function closeImage() {
+        var preview = document.querySelector('img');
+        preview.src = ""
+    }
+
+    function previewFile() {
+        var preview = document.querySelector('img');
+        var file    = document.querySelector('input[type=file]').files[0];
+        var reader  = new FileReader();
+
+        reader.onloadend = function () {
+            preview.src = reader.result;
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = "";
+        }
+    }
 </script>
 
 <footer>
     <small>The header is editable...</small>
 </footer>
+
