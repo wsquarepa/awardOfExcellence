@@ -53,10 +53,6 @@
             right: 0;
         }
 
-        * {
-            box-sizing: border-box
-        }
-
         /* Set height of body and the document to 100% */
         body,
         html {
@@ -92,15 +88,17 @@
 <form action="/viewAuctionItems.html">
     Item Name: <input type="text" name="name" placeholder="Name" required> <br>
     Item Discription: <textarea type="text" name="description" placeholder="Description" required> </textarea> <br>
+    Item Price: $<input type="number" name="price" placeholder="Price" required> </input> <br>
     Item Image (if applicable): <input type="file" name="image" placeholder="Image" id="image" onchange="previewFile()"> 
     <br>
     <img id="imageHolder" src="" height="200" placeholder="Your image appears here.">  <br>
-    <button class="button" type="submit" onClick="submitToServer"><span>Submit!</span></button>
+    <button class="button" type="submit" onClick="submitToServer()" ><span>Submit!</span></button>
 </form>
 
 <script>
     function submitToServer() {
-        location.href = "viewAuctionItems.html"
+        alert("There was an issue")
+        
     }
 
     function closeImage() {
@@ -120,7 +118,7 @@
         if (file) {
             reader.readAsDataURL(file);
         } else {
-            preview.src = "";
+            preview.src = ""
         }
     }
 </script>
