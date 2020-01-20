@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var http = require('http');
 var mysql = require('mysql');
 const fs = require('fs');
