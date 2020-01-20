@@ -19,7 +19,7 @@ con.connect(function(err) {
   //   if (err) throw err;
   //   console.log("Database created");
   // });
-  let sql = "INSERT INTO test(text) VALUES(\"Stuff!\")"
+  let sql = "INSERT INTO test(id,text) VALUES(1 ,\"Stuff!\")"
   con.query(sql)
   con.end();
 });
