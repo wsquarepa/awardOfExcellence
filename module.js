@@ -19,13 +19,19 @@ con.connect(function(err) {
   //   if (err) throw err;
   //   console.log("Database created");
   // });
+  let sql = "INSERT INTO test(text) VALUES(\"Stuff!\""
+  con.query(sql)
+  con.end();
 });
 
 http.createServer(function (req, res) {
   res.writeHead(200, {'Content-Type': 'text/html'});
   if (!(req.url == "/")) {
     res.write(req.url + " was requested, but does not exist.");
-  } else {
+  } else if (req.url == "coolStuffs") {
+    res.write("Welcome to the cool stuff. There isn't any cool stuff but whooo caares?")
+  } 
+  else {
     res.write("Welcome to the homepage.")
     
   }
