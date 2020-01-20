@@ -7,7 +7,6 @@ const fs = require('fs');
 
 var con = mysql.createConnection({
   host: "localhost",
-  port:"22",
   user: "webaccess",
   password: "amazingWeb",
   database:"paauctionsite"
