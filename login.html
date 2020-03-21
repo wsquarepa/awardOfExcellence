@@ -1,24 +1,80 @@
+<head>
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-database.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBDcNmUr9TpdeveP8-JbKYi1_-gFVsTuF8",
+            authDomain: "paauctionsite.firebaseapp.com",
+            databaseURL: "https://paauctionsite.firebaseio.com",
+            projectId: "paauctionsite",
+            storageBucket: "paauctionsite.appspot.com",
+            messagingSenderId: "460395282781",
+            appId: "1:460395282781:web:c0ba7c7664c8a726c6a8b4",
+            measurementId: "G-GJLM7G14KV"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        //firebase.analytics();
+        var database = firebase.database()
+    </script>
+
+    <style>
+        a {
+            position: absolute;
+            cursor: pointer;
+            color: blue;
+        }
+
+        a:hover {
+            position: absolute;
+            color: red;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
 <h1>Log in to buy and sell things.</h1>
 
 <form action="viewAuctionItems.html">
-    <input type="text" placeholder="username" id="username"> <br>
+    <input type="text" placeholder="email" id="username"> <br>
     <input type="password" placeholder="password" id="password"> <br>
-    <button onClick="login()" type = "button">Login</button>
+    <button onclick="login()" type = "button">Login</button>
 </form>
 
-
-<p id="passwordWrong"></p>
+<a href="signUp.html"> Sign up instead</a>
 
 <script>
+    var email;
     function login() {
-        var username = document.getElementById("username")
-        var password = document.getElementById("password")
+        email = document.getElementById("username").value
+        var password = document.getElementById("password").value
+        var username = splitEmail(email)[0]
+        fetchData(username, password)
+    }
 
-        if (username.value == "wsquarepa" && password.value == "testLogin") {
-            document.writeln("<button onClick = \"viewAuctionItems.html\">View Auction Items</button>")
-        } else {
-            var passWrong = document.getElementById("passwordWrong")
-            passWrong.innerText = "Username or password does not exist."
-        }
+    function fetchData(userId, passwordInput) {
+        return database.ref('/users/' + userId).once('value').then(function(snapshot) {
+            var password = (snapshot.val() && snapshot.val().password) || 'Anonymous';
+            switch (passwordInput) {
+                case password:
+                    localStorage.setItem("userEmail", email)
+                    window.location.href = "viewAuctionItems.html"
+                    break;
+                default:
+                    alert("Incorrect username or password.")
+            }
+        });
+    }
+
+    function splitEmail(email) {
+        var nameParts = email.split("@");
+        var name = nameParts.length==2 ? nameParts[0] : null;
+        return nameParts
     }
 </script>

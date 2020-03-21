@@ -1,0 +1,122 @@
+<head>
+    </style>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+    https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-database.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBDcNmUr9TpdeveP8-JbKYi1_-gFVsTuF8",
+            authDomain: "paauctionsite.firebaseapp.com",
+            databaseURL: "https://paauctionsite.firebaseio.com",
+            projectId: "paauctionsite",
+            storageBucket: "paauctionsite.appspot.com",
+            messagingSenderId: "460395282781",
+            appId: "1:460395282781:web:c0ba7c7664c8a726c6a8b4",
+            measurementId: "G-GJLM7G14KV"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        //firebase.analytics();
+        var database = firebase.database()
+    </script>
+    <style>
+        .disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .button {
+            display: inline-block;
+            border-radius: 4px;
+            background-color: #f4511e;
+            border: none;
+            color: #FFFFFF;
+            text-align: center;
+            font-size: 18px;
+            padding: 20px;
+            width: 200px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+        .button:hover span {
+            padding-right: 25px;
+        }
+
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="itemName">Unloaded Element</h1>
+    <h3 id="itemDescription">Unloaded Element</h3>
+    <p id="seller">Unloaded Element</p>
+    <p id="currentBidValue">Unloaded Element</p> <br>
+    <p id="numOfBidders">Unloaded Element</p> <br>
+    <button id="bidButton" onclick="bid()">Increase Bid to $Undefined</button>
+</body>
+<script>
+    var selectedItem = ""
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+            vars[key] = value.replace("%20", " ")
+        });
+        return vars;
+    }
+
+    selectedItem = getUrlVars()["selectedItem"]
+    var info
+    function init() {
+        var nameDisplay = document.getElementById("itemName")
+        var descriptionDisplay = document.getElementById("itemDescription")
+        var sellerDisplay = document.getElementById("seller")
+        var currentBidValueDisplay = document.getElementById("currentBidValue")
+        var currentNumberOfBiddersDisplay = document.getElementById("numOfBidders")
+        var bidButton = document.getElementById("bidButton")
+        return database.ref('/auctionItems/' + selectedItem).on('value', function(snapshot) {
+            info = snapshot.val()
+            nameDisplay.innerHTML = selectedItem
+            descriptionDisplay.innerHTML = "Description: " + info["itemDescription"]
+            sellerDisplay.innerHTML = "Seller: " + info["emailOfSeller"]
+            currentBidValueDisplay.innerHTML = "$" + info["itemPrice"]
+            currentNumberOfBiddersDisplay.innerHTML = info["bids"] + " Bid" + (info["bids"] == 1? "":"s")
+            bidButton.innerHTML = "Increase Bid to $" + (parseInt(info["itemPrice"]) + 5).toString(10)
+        });
+    }
+
+    function bid(moneyValue) {
+        database.ref('auctionItems/' + selectedItem).set({
+            emailOfSeller: info["emailOfSeller"],
+            itemDescription: info["itemDescription"],
+            itemPrice: (parseInt(info["itemPrice"]) + 5).toString(10),
+            bids: (parseInt(info["bids"]) + 1).toString(10)
+        });
+    }
+
+    init()
+</script>

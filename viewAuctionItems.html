@@ -1,90 +1,130 @@
 <head>
-        <title>Pacific Academy Auction Site</title>
-        <link rel="icon" href="logo.png">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            .wrapper {
-                text-align: center;
-            }
-    
-            .disabled {
-                opacity: 0.2;
-                cursor: not-allowed;
-            }
-    
-            .button {
-                display: inline-block;
-                border-radius: 4px;
-                background-color: #f4511e;
-                border: none;
-                color: #FFFFFF;
-                text-align: center;
-                font-size: 18px;
-                padding: 20px;
-                width: 200px;
-                transition: all 0.5s;
-                cursor: pointer;
-                margin: 5px;
-            }
-    
-            .button span {
-                cursor: pointer;
-                display: inline-block;
-                position: relative;
-                transition: 0.5s;
-            }
-    
-            .button span:after {
-                content: '\00bb';
-                position: absolute;
-                opacity: 0;
-                top: 0;
-                right: -20px;
-                transition: 0.5s;
-            }
-    
-            .button:hover span {
-                padding-right: 25px;
-            }
-    
-            .button:hover span:after {
-                opacity: 1;
-                right: 0;
-            }
-    
-            * {
-                box-sizing: border-box
-            }
-    
-            /* Set height of body and the document to 100% */
-            body,
-            html {
-                height: 100%;
-                margin: 0;
-                font-family: Arial;
-            }
+    <title>Pacific Academy Auction Site</title>
+    <link rel="icon" href="logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .wrapper {
+            text-align: center;
+        }
 
-            .card {
-                /* Add shadows to create the "card" effect */
-                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-                transition: 0.3s;
-                text-align: center;
-            }
+        .disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
 
-                /* On mouse-over, add a deeper shadow */
-            .card:hover {
-                box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-            }
+        .button {
+            display: inline-block;
+            border-radius: 4px;
+            background-color: #f4511e;
+            border: none;
+            color: #FFFFFF;
+            text-align: center;
+            font-size: 18px;
+            padding: 20px;
+            width: 200px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+        }
 
-                /* Add some padding inside the card container */
-            .container {
-                padding: 2px 16px;
-                font-size: 25px
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+        .button:hover span {
+            padding-right: 25px;
+        }
+
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        /* Set height of body and the document to 100% */
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial;
+        }
+
+        /* Float four columns side by side */
+        .column {
+            float: left;
+            width: 100%;
+            /* padding: 0 10px; */
+        }
+
+        /* Remove extra left and right margins, due to padding */
+        .row {margin: 0 -5px;}
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Responsive columns */
+        @media screen and (max-width: 600px) {
+            .column {
+                width: 100%;
+                display: block;
+                margin-bottom: 20px;
             }
-    
-        </style>
-    </head>
+        }
+
+        /* Style the counter cards */
+        .card {
+            /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); */
+            padding: 20px;
+            text-align: center;
+            background-color: #fafafa;e: 25px
+        }
+
+    </style>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+    https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-database.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBDcNmUr9TpdeveP8-JbKYi1_-gFVsTuF8",
+            authDomain: "paauctionsite.firebaseapp.com",
+            databaseURL: "https://paauctionsite.firebaseio.com",
+            projectId: "paauctionsite",
+            storageBucket: "paauctionsite.appspot.com",
+            messagingSenderId: "460395282781",
+            appId: "1:460395282781:web:c0ba7c7664c8a726c6a8b4",
+            measurementId: "G-GJLM7G14KV"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        //firebase.analytics();
+        var database = firebase.database()
+    </script>
+</head>
 
 <h1 align="center"> Auctioned Items </h1>
 <h3 align="center"> This is where you can buy stuff! </h3>
@@ -92,9 +132,50 @@
     <button class="button" style="vertical-align:middle" onclick="location.href='createAuctionItem.html'"><span>Create Auction Item</span></button>
 </center>
 <br>
-<div class="card">
-    <img src="auction.png" style="height:20%; width:20%;">
-    <div class="container">
-        Moo Fessa.
-    </div>
+<div class="column" id="cards">
 </div>
+
+<script>
+    var keys = []
+    function respond(cardObject) {
+        localStorage.setItem("itemClicked", cardObject.innerHTML)
+        window.location.href = "viewAuctionItem.html?selectedItem=" + cardObject.innerHTML
+    }
+
+    function getMouseCoords(event) {
+        return [event.clientX, event.clientY]
+    }
+
+    function init() {
+        var cards = document.getElementById("cards")
+        return database.ref('/auctionItems/').on('value', function(snapshot) {
+            var items = (snapshot.val()) || 'Nothing';
+            console.log(items)
+            if (items == "Nothing") {
+                cards.hidden = true
+            } else {
+                var lengthOfItems = Object.keys(items).length
+                keys = Object.keys(items)
+                var itemsList = []
+                for (var i = 0; i < lengthOfItems; i++) {
+                    var node = document.createElement('div')
+                    var theNodeInsideNode = document.createElement('div')
+                    itemsList.push(theNodeInsideNode)
+                    var theNodeInsideTheNodeInsideNode = document.createTextNode(Object.keys(items)[i])
+                    console.log(theNodeInsideTheNodeInsideNode)
+                    node.className = "row"
+                    theNodeInsideNode.className = "card"
+                    theNodeInsideNode.id = i.toString()
+                    theNodeInsideNode.onclick = function() {
+                        respond(this)
+                    }
+                    theNodeInsideNode.appendChild(theNodeInsideTheNodeInsideNode)
+                    node.appendChild(theNodeInsideNode)
+                    cards.appendChild(node)
+                }
+            }
+        });
+    }
+
+    init()
+</script>

@@ -80,39 +80,86 @@
         }
 
     </style>
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-database.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBDcNmUr9TpdeveP8-JbKYi1_-gFVsTuF8",
+            authDomain: "paauctionsite.firebaseapp.com",
+            databaseURL: "https://paauctionsite.firebaseio.com",
+            projectId: "paauctionsite",
+            storageBucket: "paauctionsite.appspot.com",
+            messagingSenderId: "460395282781",
+            appId: "1:460395282781:web:c0ba7c7664c8a726c6a8b4",
+            measurementId: "G-GJLM7G14KV"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        //firebase.analytics();
+        var database = firebase.database()
+    </script>
 </head>
 
 <h1 contenteditable="true">Create an auction item!</h1>
 
-
-<form action="/viewAuctionItems.html">
-    Item Name: <input type="text" name="name" placeholder="Name" required> <br>
-    Item Discription: <textarea type="text" name="description" placeholder="Description" required> </textarea> <br>
-    Item Price: $<input type="number" name="price" placeholder="Price" required> </input> <br>
-    Item Image (if applicable): <input type="file" name="image" placeholder="Image" id="image" onchange="previewFile()"> 
-    <br>
-    <img id="imageHolder" src="" height="200" placeholder="Your image appears here.">  <br>
-    <button class="button" type="submit" onClick="submitToServer()" ><span>Create!</span></button>
-</form>
-
+Item Name: <input type="text" name="name" placeholder="Name" id="name" required> <br>
+Item Discription: <textarea type="text" name="description" placeholder="Description" id="description" required> </textarea> <br>
+Item Price: $<input type="number" name="price" placeholder="Price" id="price" required> </input> <br>
+Item Image (if applicable): <input type="file" name="image" placeholder="Image" id="image" onchange="previewFile()"> <br>
+<img id="imageHolder" src="" height="200" placeholder="Your image appears here.">  <br>
+<button class="button" onclick="submitToServer()"><span>Create!</span></button>
 
 
 <script>
+    function writeItemData(itemName,  itemDescription, itemPrice, emailOfSeller) {
+        database.ref('auctionItems/' + itemName).set({
+            emailOfSeller: emailOfSeller,
+            itemDescription: itemDescription,
+            itemPrice: itemPrice,
+            bids: 0
+        });
+        window.location.href = "viewAuctionItems.html"
+    }
+
+    
     function submitToServer() {
-        alert("There was an issue")
-        
+        var itemName = document.getElementById("name").value
+        var itemDescription = document.getElementById("description").value
+        var itemPrice = document.getElementById("price").value
+        var emailOfSeller = localStorage.getItem("userEmail")
+        if (itemName == "" || itemDescription == "" || itemPrice == "" || emailOfSeller == undefined) {
+            if (emailOfSeller == undefined) {
+                var login = confirm("Please log in first.")
+                if (login) {
+                    window.location.href = "login.html"
+                } else {
+                    window.location.href = "viewAuctionItems.html"
+                }
+            } else {
+                alert("Please fill in all required fields.")
+            }
+        } else {
+            writeItemData(itemName, itemDescription, itemPrice, emailOfSeller)
+        }
     }
 
     function closeImage() {
         var preview = document.querySelector('img');
-        preview.src = ""
+        preview.hidden = true
     }
 
     function previewFile() {
-        var preview = document.querySelector('img');
+        var preview;
+        
         var file    = document.querySelector('input[type=file]').files[0];
         var reader  = new FileReader();
-
+        preview = document.querySelector('img');
+        preview.hidden = false
         reader.onloadend = function () {
             preview.src = reader.result;
         }
@@ -121,11 +168,12 @@
             reader.readAsDataURL(file);
         } else {
             preview.src = ""
+            closeImage();
         }
     }
+    closeImage()
 </script>
 
 <footer>
     <small>The header is editable...</small>
 </footer>
-

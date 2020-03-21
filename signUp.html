@@ -1,0 +1,64 @@
+<head>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-database.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBDcNmUr9TpdeveP8-JbKYi1_-gFVsTuF8",
+            authDomain: "paauctionsite.firebaseapp.com",
+            databaseURL: "https://paauctionsite.firebaseio.com",
+            projectId: "paauctionsite",
+            storageBucket: "paauctionsite.appspot.com",
+            messagingSenderId: "460395282781",
+            appId: "1:460395282781:web:c0ba7c7664c8a726c6a8b4",
+            measurementId: "G-GJLM7G14KV"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        //firebase.analytics();
+        var database = firebase.database()
+    </script>
+</head>
+
+<h1>Sign up to buy and sell things.</h1>
+
+<input type="text" placeholder="email" id="email"> <br>
+<input type="password" placeholder="password" id="password"> <br>
+<input type="password" placeholder="Confirm password" id="passwordConf"> <br>
+<button onClick="signUp()" type = "button">Sign Up!</button>
+
+
+<p id="passwordWrong"></p>
+
+<script>
+    function signUp() {
+        var email = document.getElementById("email").value
+        var password = document.getElementById("password").value
+        var passwordConf = document.getElementById("passwordConf").value
+        if (password != passwordConf) {
+            alert("Passwords do not match")
+        } else {
+            var nameParts = email.split("@");
+            var name = nameParts.length==2 ? nameParts[0] : null;
+            if (nameParts[1].endsWith("pacificacademy.net")) {
+                writeUserData(nameParts[0], email, password)
+            } else {
+                alert("Not a valid Pacific Academy email.")
+            }
+        }
+
+    }
+
+    function writeUserData(userId, email, password) {
+        database.ref('users/' + userId).set({
+            email: email,
+            password : password
+        });
+        window.location.href = "viewAuctionItems.html"
+    }
+</script>
