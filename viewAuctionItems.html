@@ -9,8 +9,44 @@
         }
 
         .disabled {
-            opacity: 0.2;
+            display: inline-block;
+            border-radius: 4px;
+            background-color: #f4511e;
+            border: none;
+            color: #FFFFFF;
+            text-align: center;
+            font-size: 18px;
+            padding: 20px;
+            width: 200px;
+            transition: 0.2s;
             cursor: not-allowed;
+            margin: 5px;
+            opacity: 0.2;
+        }
+
+        .disabled span {
+            cursor: not-allowed;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        .disabled span:after {
+            content: 'X';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 2s;
+        }
+
+        .disabled:hover span {
+            padding-right: 25px;
+        }
+
+        .disabled:hover span:after {
+            opacity: 1;
+            right: 0;
         }
 
         .button {
@@ -68,12 +104,14 @@
         /* Float four columns side by side */
         .column {
             float: left;
-            width: 100%;
-            /* padding: 0 10px; */
+            width: 25%;
+            padding: 0 10px;
         }
 
         /* Remove extra left and right margins, due to padding */
-        .row {margin: 0 -5px;}
+        .row {
+            margin: 0 -5px;
+        }
 
         /* Clear floats after the columns */
         .row:after {
@@ -96,8 +134,47 @@
             /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); */
             padding: 20px;
             text-align: center;
-            background-color: #fafafa;e: 25px
+            background-color: #e2e2e2;
+            margin-bottom: 20px;
+            position: relative;
         }
+
+        .card:hover {
+            background-color: #eeeeee;
+        }
+
+        .bidsViewBox {
+            position: absolute;
+            font-size: small;
+            border: black;
+            border-style: solid;
+            border-width: 2px;
+            padding: 3px;
+            top: 0px;
+            left: 0px;
+            width: auto;
+            height: auto;
+            /* background-color: white; */
+        }
+
+        .cushViewBox {
+            position: absolute;
+            font-size: small;
+            border: black;
+            border-style: solid;
+            border-width: 2px;
+            padding: 3px;
+            top: 0px;
+            right: 0px;
+            width: auto;
+            height: auto;
+            /* background-color: white; */
+        }
+
+        img {
+            width: 50%
+        }
+
 
     </style>
     <!-- The core Firebase JS SDK is always required and must be listed first -->
@@ -123,23 +200,25 @@
         firebase.initializeApp(firebaseConfig);
         //firebase.analytics();
         var database = firebase.database()
+
     </script>
 </head>
 
 <h1 align="center"> Auctioned Items </h1>
 <h3 align="center"> This is where you can buy stuff! </h3>
 <center>
-    <button class="button" style="vertical-align:middle" onclick="location.href='createAuctionItem.html'"><span>Create Auction Item</span></button>
+    <button class="button" id="createButton" style="vertical-align:middle" onclick="location.href='createAuctionItem.html'"><span>Create
+            Auction Item</span></button>
 </center>
 <br>
-<div class="column" id="cards">
+<div class="row" id="cards">
 </div>
 
 <script>
     var keys = []
+
     function respond(cardObject) {
-        localStorage.setItem("itemClicked", cardObject.innerHTML)
-        window.location.href = "viewAuctionItem.html?selectedItem=" + cardObject.innerHTML
+        window.location.href = "viewAuctionItem.html?selectedItem=" + cardObject.id
     }
 
     function getMouseCoords(event) {
@@ -148,7 +227,9 @@
 
     function init() {
         var cards = document.getElementById("cards")
-        return database.ref('/auctionItems/').on('value', function(snapshot) {
+        loginAlert()
+        return database.ref('/auctionItems/').on('value', function (snapshot) {
+            cards.innerHTML = ""
             var items = (snapshot.val()) || 'Nothing';
             console.log(items)
             if (items == "Nothing") {
@@ -158,24 +239,62 @@
                 keys = Object.keys(items)
                 var itemsList = []
                 for (var i = 0; i < lengthOfItems; i++) {
-                    var node = document.createElement('div')
-                    var theNodeInsideNode = document.createElement('div')
-                    itemsList.push(theNodeInsideNode)
-                    var theNodeInsideTheNodeInsideNode = document.createTextNode(Object.keys(items)[i])
-                    console.log(theNodeInsideTheNodeInsideNode)
-                    node.className = "row"
-                    theNodeInsideNode.className = "card"
-                    theNodeInsideNode.id = i.toString()
-                    theNodeInsideNode.onclick = function() {
+                    var columnNode = document.createElement('div')
+                    var cardNode = document.createElement('div')
+                    var breakNode1 = document.createElement("br")
+                    var titleNode = document.createElement("h3")
+                    var imageNode = document.createElement("img")
+                    var textNodeTitle = document.createTextNode(Object.keys(items)[i])
+                    var textNodeDescription = document.createTextNode("Description: " + items[Object.keys(
+                        items)[i]]["itemDescription"].substring(0, 10) + "...")
+                    var numberOfBidsNode = document.createElement('div')
+                    var cushNode = document.createElement('div')
+                    var bidsTextNode = document.createTextNode(items[Object.keys(items)[i]]["bids"].toString() +
+                        (items[Object.keys(items)[i]]["bids"] == 1 ? " bid" : " bids"))
+                    var cushTextNode = document.createTextNode("$" + items[Object.keys(items)[i]]["itemPrice"]
+                        .toString())
+                    var imgUrl = items[Object.keys(items)[i]]["imgUrl"]
+                    itemsList.push(cardNode)
+                    columnNode.className = "column"
+                    cardNode.className = "card"
+                    numberOfBidsNode.className = "bidsViewBox"
+                    cushNode.className = "cushViewBox"
+                    cardNode.id = textNodeTitle.data
+                    cardNode.onclick = function () {
                         respond(this)
                     }
-                    theNodeInsideNode.appendChild(theNodeInsideTheNodeInsideNode)
-                    node.appendChild(theNodeInsideNode)
-                    cards.appendChild(node)
+                    if (imgUrl !== undefined) {
+                        imageNode.src = imgUrl
+                    }
+                    numberOfBidsNode.appendChild(bidsTextNode)
+                    cushNode.appendChild(cushTextNode)
+                    cardNode.appendChild(numberOfBidsNode)
+                    cardNode.appendChild(cushNode)
+                    titleNode.appendChild(textNodeTitle)
+                    cardNode.appendChild(titleNode)
+                    cardNode.appendChild(breakNode1)
+                    cardNode.appendChild(imageNode)
+                    cardNode.appendChild(breakNode1)
+                    cardNode.appendChild(textNodeDescription)
+                    columnNode.appendChild(cardNode)
+                    cards.appendChild(columnNode)
                 }
             }
         });
     }
+    console.log(localStorage.getItem("userEmail"))
 
+    function loginAlert() {
+        if (localStorage.getItem("userEmail") === null) {
+            var login = confirm("Please log in first.")
+            if (login) {
+                window.location.href = "login.html"
+            } else {
+                document.getElementById("createButton").className = "disabled"
+                document.getElementById("createButton").onclick = function() {loginAlert()}
+            }
+        }
+    }
     init()
+
 </script>

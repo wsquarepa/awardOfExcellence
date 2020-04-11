@@ -1,5 +1,4 @@
 <head>
-    </style>
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
 
@@ -25,6 +24,10 @@
         var database = firebase.database()
     </script>
     <style>
+        .wrapper {
+            text-align: center;
+        }
+
         .disabled {
             opacity: 0.2;
             cursor: not-allowed;
@@ -39,7 +42,7 @@
             text-align: center;
             font-size: 18px;
             padding: 20px;
-            width: 200px;
+            width: 250px;
             transition: all 0.5s;
             cursor: pointer;
             margin: 5px;
@@ -69,16 +72,101 @@
             opacity: 1;
             right: 0;
         }
+
+        .spin-container {
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .spin {
+            border: 3px solid #0D4B9F;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            border-radius: 50%;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        #loader2 {
+            border: 3px solid #E0EDFF;
+            width: 220px;
+            height: 220px;
+            position: relative;
+            top: -216px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate2 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        #loader3 {
+            border: 3px solid #005CDC;
+            width: 240px;
+            height: 240px;
+            position: relative;
+            top: -452px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        #loader4 {
+            border: 3px solid #94B6E5;
+            width: 260px;
+            height: 260px;
+            position: relative;
+            top: -708px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate2 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotateZ(-360deg)
+            }
+
+            100% {
+                transform: rotateZ(0deg)
+            }
+        }
+
+        @keyframes rotate2 {
+            0% {
+                transform: rotateZ(360deg)
+            }
+
+            100% {
+                transform: rotateZ(0deg)
+            }
+        }
+
+        #text {
+            color: #000000;
+            font-family: Arial;
+            font-size: 15px;
+            position: relative;
+            top: -857px;
+        }
     </style>
 </head>
-<body>
+<div id="itemInfo" hidden>
     <h1 id="itemName">Unloaded Element</h1>
     <h3 id="itemDescription">Unloaded Element</h3>
+    <img id="imageHolder">
     <p id="seller">Unloaded Element</p>
     <p id="currentBidValue">Unloaded Element</p> <br>
     <p id="numOfBidders">Unloaded Element</p> <br>
-    <button id="bidButton" onclick="bid()">Increase Bid to $Undefined</button>
-</body>
+    <button class="button" onclick="bid()" ><span id="bidButton">Create!</span></button>
+</div>
+<div class="spin-container" id="spin">
+    <div class="spin" id="loader"></div>
+    <div class="spin" id="loader2"></div>
+    <div class="spin" id="loader3"></div>
+    <div class="spin" id="loader4"></div>
+    <span id="text">Loading...</span>
+</div>
 <script>
     var selectedItem = ""
     function getUrlVars() {
@@ -90,20 +178,30 @@
     }
 
     selectedItem = getUrlVars()["selectedItem"]
-    var info
+    var info, imgUrl;
     function init() {
+        var loadingSpinner = document.getElementById("spin")
         var nameDisplay = document.getElementById("itemName")
         var descriptionDisplay = document.getElementById("itemDescription")
         var sellerDisplay = document.getElementById("seller")
         var currentBidValueDisplay = document.getElementById("currentBidValue")
         var currentNumberOfBiddersDisplay = document.getElementById("numOfBidders")
         var bidButton = document.getElementById("bidButton")
+        var loadingSpinner = document.getElementById("spin")
+        var imageHolder = document.getElementById("imageHolder")
         return database.ref('/auctionItems/' + selectedItem).on('value', function(snapshot) {
+            document.getElementById("itemInfo").hidden = false
+            loadingSpinner.hidden = true
             info = snapshot.val()
             nameDisplay.innerHTML = selectedItem
+            imgUrl = info["imgUrl"]
+            imageHolder.src = imgUrl
+            if (imgUrl === undefined) {
+                imgUrl = ""
+            }
             descriptionDisplay.innerHTML = "Description: " + info["itemDescription"]
-            sellerDisplay.innerHTML = "Seller: " + info["emailOfSeller"]
-            currentBidValueDisplay.innerHTML = "$" + info["itemPrice"]
+            sellerDisplay.innerHTML = "Seller: " + splitEmail(info["emailOfSeller"]) [0]
+            currentBidValueDisplay.innerHTML = "Current Price: <br> $" + info["itemPrice"]
             currentNumberOfBiddersDisplay.innerHTML = info["bids"] + " Bid" + (info["bids"] == 1? "":"s")
             bidButton.innerHTML = "Increase Bid to $" + (parseInt(info["itemPrice"]) + 5).toString(10)
         });
@@ -114,9 +212,22 @@
             emailOfSeller: info["emailOfSeller"],
             itemDescription: info["itemDescription"],
             itemPrice: (parseInt(info["itemPrice"]) + 5).toString(10),
-            bids: (parseInt(info["bids"]) + 1).toString(10)
+            bids: (parseInt(info["bids"]) + 1).toString(10),
+            imgUrl:imgUrl
         });
     }
 
-    init()
+    function splitEmail(email) {
+        var nameParts = email.split("@");
+        var name = nameParts.length == 2 ? nameParts[0] : null;
+        return nameParts
+    }
+    
+    
+</script>
+<script id="mainScript">
+    setTimeout(function() {
+        init()
+    }, 500)
+    document.getElementById("mainScript").remove()
 </script>

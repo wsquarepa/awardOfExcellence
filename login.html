@@ -1,7 +1,7 @@
 <head>
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
 
-        <!-- TODO: Add SDKs for Firebase products that you want to use
+    <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-database.js"></script>
 
@@ -21,6 +21,7 @@
         firebase.initializeApp(firebaseConfig);
         //firebase.analytics();
         var database = firebase.database()
+
     </script>
 
     <style>
@@ -35,22 +36,108 @@
             color: red;
             cursor: pointer;
         }
+
+        .spin-container {
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .spin {
+            border: 3px solid #0D4B9F;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            border-radius: 50%;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        #loader2 {
+            border: 3px solid #E0EDFF;
+            width: 220px;
+            height: 220px;
+            position: relative;
+            top: -216px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate2 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        #loader3 {
+            border: 3px solid #005CDC;
+            width: 240px;
+            height: 240px;
+            position: relative;
+            top: -452px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        #loader4 {
+            border: 3px solid #94B6E5;
+            width: 260px;
+            height: 260px;
+            position: relative;
+            top: -708px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate2 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotateZ(-360deg)
+            }
+
+            100% {
+                transform: rotateZ(0deg)
+            }
+        }
+
+        @keyframes rotate2 {
+            0% {
+                transform: rotateZ(360deg)
+            }
+
+            100% {
+                transform: rotateZ(0deg)
+            }
+        }
+
+        #text {
+            color: #000000;
+            font-family: Arial;
+            font-size: 15px;
+            position: relative;
+            top: -857px;
+        }
+
     </style>
 
 </head>
 
 <h1>Log in to buy and sell things.</h1>
-
-<form action="viewAuctionItems.html">
-    <input type="text" placeholder="email" id="username"> <br>
-    <input type="password" placeholder="password" id="password"> <br>
-    <button onclick="login()" type = "button">Login</button>
-</form>
-
-<a href="signUp.html"> Sign up instead</a>
+<div id="form">
+    <form action="viewAuctionItems.html">
+        <input type="text" placeholder="email" id="username"> <br>
+        <input type="password" placeholder="password" id="password"> <br>
+        <button onclick="login()" type="button">Login</button>
+    </form>
+    <a href="signUp.html"> Sign up instead</a>
+</div>
+<div class="spin-container" id="spin" hidden>
+    <div class="spin" id="loader"></div>
+    <div class="spin" id="loader2"></div>
+    <div class="spin" id="loader3"></div>
+    <div class="spin" id="loader4"></div>
+    <span id="text">Logging you in...</span>
+</div>
 
 <script>
     var email;
+
     function login() {
         email = document.getElementById("username").value
         var password = document.getElementById("password").value
@@ -59,12 +146,16 @@
     }
 
     function fetchData(userId, passwordInput) {
-        return database.ref('/users/' + userId).once('value').then(function(snapshot) {
+        return database.ref('/users/' + userId).once('value').then(function (snapshot) {
             var password = (snapshot.val() && snapshot.val().password) || 'Anonymous';
             switch (passwordInput) {
                 case password:
                     localStorage.setItem("userEmail", email)
-                    window.location.href = "viewAuctionItems.html"
+                    document.getElementById("form").hidden = true;
+                    document.getElementById("spin").hidden = false
+                    setTimeout(function () {
+                        window.location.href = "viewAuctionItems.html"
+                    }, 5000)
                     break;
                 default:
                     alert("Incorrect username or password.")
@@ -74,7 +165,12 @@
 
     function splitEmail(email) {
         var nameParts = email.split("@");
-        var name = nameParts.length==2 ? nameParts[0] : null;
+        var name = nameParts.length == 2 ? nameParts[0] : null;
         return nameParts
     }
+
+    if (localStorage.getItem("userEmail") !== null) {
+        location = "viewAuctionItems.html"
+    }
+
 </script>

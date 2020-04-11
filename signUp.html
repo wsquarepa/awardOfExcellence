@@ -2,7 +2,7 @@
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
 
-        <!-- TODO: Add SDKs for Firebase products that you want to use
+    <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-database.js"></script>
 
@@ -22,15 +22,103 @@
         firebase.initializeApp(firebaseConfig);
         //firebase.analytics();
         var database = firebase.database()
+
     </script>
+    <style>
+        .spin-container {
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .spin {
+            border: 3px solid #0D4B9F;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            border-radius: 50%;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        #loader2 {
+            border: 3px solid #E0EDFF;
+            width: 220px;
+            height: 220px;
+            position: relative;
+            top: -216px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate2 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        #loader3 {
+            border: 3px solid #005CDC;
+            width: 240px;
+            height: 240px;
+            position: relative;
+            top: -452px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        #loader4 {
+            border: 3px solid #94B6E5;
+            width: 260px;
+            height: 260px;
+            position: relative;
+            top: -708px;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: rotate2 2s cubic-bezier(0.26, 1.36, 0.74, -0.29) infinite;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotateZ(-360deg)
+            }
+
+            100% {
+                transform: rotateZ(0deg)
+            }
+        }
+
+        @keyframes rotate2 {
+            0% {
+                transform: rotateZ(360deg)
+            }
+
+            100% {
+                transform: rotateZ(0deg)
+            }
+        }
+
+        #text {
+            color: #000000;
+            font-family: Arial;
+            font-size: 15px;
+            position: relative;
+            top: -857px;
+        }
+
+    </style>
 </head>
-
 <h1>Sign up to buy and sell things.</h1>
+<div id="form">
+    <input type="text" placeholder="email" id="email"> <br>
+    <input type="password" placeholder="password" id="password"> <br>
+    <input type="password" placeholder="Confirm password" id="passwordConf"> <br>
+    <button onClick="signUp()" type="button">Sign Up!</button>
+</div>
+<div class="spin-container" id="spin" hidden>
+    <div class="spin" id="loader"></div>
+    <div class="spin" id="loader2"></div>
+    <div class="spin" id="loader3"></div>
+    <div class="spin" id="loader4"></div>
+    <span id="text">Unloaded</span>
+</div>
 
-<input type="text" placeholder="email" id="email"> <br>
-<input type="password" placeholder="password" id="password"> <br>
-<input type="password" placeholder="Confirm password" id="passwordConf"> <br>
-<button onClick="signUp()" type = "button">Sign Up!</button>
 
 
 <p id="passwordWrong"></p>
@@ -44,9 +132,15 @@
             alert("Passwords do not match")
         } else {
             var nameParts = email.split("@");
-            var name = nameParts.length==2 ? nameParts[0] : null;
+            var name = nameParts.length == 2 ? nameParts[0] : null;
             if (nameParts[1].endsWith("pacificacademy.net")) {
-                writeUserData(nameParts[0], email, password)
+                document.getElementById("form").hidden = true;
+                document.getElementById("spin").hidden = false
+                if (nameParts[0] != "") {
+                    writeUserData(nameParts[0], email, password)
+                } else {
+                    alert("Blank passwords are not accepted.")
+                }
             } else {
                 alert("Not a valid Pacific Academy email.")
             }
@@ -55,10 +149,31 @@
     }
 
     function writeUserData(userId, email, password) {
-        database.ref('users/' + userId).set({
-            email: email,
-            password : password
-        });
-        window.location.href = "viewAuctionItems.html"
+        var loadingText = document.getElementById('text')
+        loadingText.innerHTML = "Initializing connection..."
+        setTimeout(function () {
+            loadingText.innerHTML = "Connecting to database..."
+            setTimeout(function () {
+                loadingText.innerHTML = "Authorizing access <br> to database..."
+                setTimeout(function () {
+                    loadingText.innerHTML = "Creating account..."
+                    setTimeout(function () {
+                        loadingText.innerHTML = "Adding credentials <br> to account..."
+                        database.ref('users/' + userId).set({
+                            email: email,
+                            password: password
+                        });
+                        setTimeout(function () {
+                            loadingText.innerHTML = "Finalizing..."
+                            localStorage.setItem("userEmail", email)
+                            setTimeout(function () {
+                                window.location.href = "viewAuctionItems.html"
+                            }, 1000)
+                        }, 500)
+                    }, 500)
+                }, 1000)
+            }, 2000)
+        }, 10)
     }
+
 </script>
