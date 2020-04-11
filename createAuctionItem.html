@@ -235,6 +235,8 @@
         var database = firebase.database()
 
     </script>
+    <script rel="javascript" type="text/javascript" href="js/jquery-1.11.3.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- <script async src="https://imgbb.com/upload.js" data-sibling="label" data-palette="blue"></script> -->
 </head>
 <h1 contenteditable="true">Create an auction item!</h1>
@@ -247,11 +249,7 @@
     <!-- TODO -->
     Time the auction expires: <input type="datetime-local" required> <br>
     <!-- TODO -->
-    <label id="imageLabel">Item Image (if applicable. Please use <a href="https://imgbb.com">ImgBB</a> and get the <div
-            onclick="helpCenterImgBB()" class="tooltip">DIRECT LINK <span class="tooltiptext">Click for more info</span>
-        </div> for the image.):</label>
-    <br>
-    <label for="imgBBurl">imgBB Direct link: </label><input id="imgBBurl" type="url"><br>
+    <label id="imageLabel">Item Image (if applicable):</label> <input id="input_img" type="file" accept="image/*" onchange="fileChange()"><br>
     <img id="imageHolder" src="" height="200" placeholder="Your image appears here."> <br>
     Please make sure the image appears above.<br>
     <button class="button" onclick="submitToServer()"><span>Create!</span></button>
@@ -268,6 +266,7 @@
 
 <script>
     var itemNameGlobal, itemDescriptionGlobal, itemPriceGlobal, emailOfSellerGlobal;
+    var imgUrl = ""
     var img = false
 
     function writeItemData(itemName, itemDescription, itemPrice, emailOfSeller, imageUrl) {
@@ -310,7 +309,6 @@
         var itemDescription = document.getElementById("description").value
         var itemPrice = document.getElementById("price").value
         var emailOfSeller = localStorage.getItem("userEmail")
-        var imgUrl = document.getElementById("imgBBurl").value
         if (itemName == "" || itemDescription == "" || itemPrice == "" || emailOfSeller == undefined) {
             if (emailOfSeller == undefined) {
                 var login = confirm("Error: You are not logged in.")
@@ -336,10 +334,7 @@
 
     function displayImage() {
         var display = document.getElementById("imageHolder")
-        var imgBBurl = document.getElementById("imgBBurl")
-        if (imgBBurl !== undefined) {
-            display.src = imgBBurl.value
-        }
+        display.src = imgUrl
     }
 
     // document.getElementById("imgBBurl").onkeypress = displayImage
@@ -351,7 +346,29 @@
             window.location.href = "viewAuctionItems.html"
         }
     }
-    setInterval(displayImage)
+
+    function fileChange() {
+        var file = document.getElementById('input_img');
+        var form = new FormData();
+        form.append("image", file.files[0])
+        var settings = {
+            "url": "https://api.imgbb.com/1/upload?key=c9cef705f0777570c50c585c171937db",
+            "method": "POST",
+            "timeout": 0,
+            "processData": false,
+            "mimeType": "multipart/form-data",
+            "contentType": false,
+            "data": form
+        };
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+            var jx = JSON.parse(response);
+            console.log(jx.data.url);
+            imgUrl = jx.data.url
+            displayImage()
+        });
+        
+    }
 
 </script>
 
