@@ -263,8 +263,10 @@
                     cardNode.onclick = function () {
                         respond(this)
                     }
-                    if (imgUrl !== undefined) {
+                    if (imgUrl != "") {
                         imageNode.src = imgUrl
+                    } else {
+                        imageNode.src = "no-image-image.jpg"
                     }
                     numberOfBidsNode.appendChild(bidsTextNode)
                     cushNode.appendChild(cushTextNode)

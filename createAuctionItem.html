@@ -245,14 +245,32 @@
     Item Name: <input type="text" name="name" placeholder="Name" id="name" required> <br>
     Item Discription: <textarea type="text" name="description" placeholder="Description" id="description"
         required> </textarea> <br>
-    Item Price: $<input type="number" name="price" placeholder="Price" id="price" required> </input> <br>
-    <!-- TODO -->
-    Time the auction expires: <input type="datetime-local" required> <br>
-    <!-- TODO -->
-    <label id="imageLabel">Item Image (if applicable):</label> <input id="input_img" type="file" accept="image/*" onchange="fileChange()"><br>
-    <img id="imageHolder" src="" height="200" placeholder="Your image appears here."> <br>
+    Item Price (Must be a positive integer less than or equal to 100): $<input type="number" name="price"
+        placeholder="Price" id="price" required> </input> <br>
+    <!-- <input type="date" placeholder="dd/mm/yyyy"
+        pattern="(^(((0[1-9]|1[0-9]|2[0-8])[\/](0[1-9]|1[012]))|((29|30|31)[\/](0[13578]|1[02]))|((29|30)[\/](0[4,6,9]|11)))[\/](19|[2-9][0-9])\d\d$)|(^29[\/]02[\/](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)$)"
+        id="dateSelect" required> -->
+    <label for="timeOptions">Choose an expiry time:</label>
+
+    <select id="timeOptions" onchange="selected()">
+        <option value="1">In 1 hour</option>
+        <option value="6">In 6 hours</option>
+        <option value="12">In 12 hours</option>
+        <option value="24">In 1 day</option>
+        <option value="48">In 2 days</option>
+        <option value="72">In 3 days</option>
+        <option value="96">In 4 days</option>
+        <option value="120">In 5 days</option>
+        <option value="144">In 6 days</option>
+        <option value="168">In 1 week</option>
+        <option value="336">In 2 weeks</option>
+        <option value="730">In 1 month</option>
+    </select> <br>
+    <label id="imageLabel">Item Image (if applicable):</label> <input id="input_img" type="file" accept="image/*"
+        onchange="fileChange()"><br>
+    <img id="imageHolder" src="no-image-image.jpg" height="200" placeholder="Your image appears here."> <br>
     Please make sure the image appears above.<br>
-    <button class="button" onclick="submitToServer()"><span>Create!</span></button>
+    <button class="buttonm disabled" onclick="submitToServer()" id="submitButton"><span>Create!</span></button>
 </div>
 
 <div class="spin-container" id="spin" hidden>
@@ -268,6 +286,15 @@
     var itemNameGlobal, itemDescriptionGlobal, itemPriceGlobal, emailOfSellerGlobal;
     var imgUrl = ""
     var img = false
+    var expiryTime = new Date()
+
+    function selected() {
+        var now = new Date()
+        var data = document.getElementById("timeOptions").value
+        var selectedMs = parseInt(data) * 3600 * 1000
+        expiryTime = now.getTime() + selectedMs
+        console.log(new Date(expiryTime))
+    }
 
     function writeItemData(itemName, itemDescription, itemPrice, emailOfSeller, imageUrl) {
         itemNameGlobal = itemName;
@@ -285,13 +312,22 @@
                 loadingText.innerHTML = "Authorizing access <br> to database..."
                 setTimeout(function () {
                     loadingText.innerHTML = "Creating item..."
-                    database.ref('auctionItems/' + itemNameGlobal).set({
-                        emailOfSeller: emailOfSellerGlobal,
-                        itemDescription: itemDescriptionGlobal,
-                        itemPrice: itemPriceGlobal,
-                        imgUrl: imageUrl,
-                        bids: 0
-                    });
+                    var now = new Date()
+                    try {
+                        database.ref('auctionItems/' + itemNameGlobal).set({
+                            emailOfSeller: emailOfSellerGlobal,
+                            itemDescription: itemDescriptionGlobal,
+                            itemPrice: itemPriceGlobal,
+                            imgUrl: imageUrl,
+                            bids: 0,
+                            expires:expiryTime
+                        });
+                    } catch(e) {
+                        setTimeout(function() {
+                            alert("An error occured. " + e)
+                            window.location.reload()
+                        }, 100)
+                    }
                     setTimeout(function () {
                         loadingText.innerHTML = "Finalizing creation..."
                         setTimeout(function () {
@@ -367,8 +403,66 @@
             imgUrl = jx.data.url
             displayImage()
         });
-        
+
     }
+
+    function checkValid() {
+        var nameValid = checkInputFieldValidity("name")
+        var descriptionValid = checkInputFieldValidity("description")
+        var priceValid = checkPriceValidity()
+        //var dateValid = checkIfDateValid()
+        var dateValid = true
+        if (dateValid && nameValid && descriptionValid && priceValid) {
+            document.getElementById("submitButton").className = "button"
+            document.getElementById("submitButton").onclick = submitToServer
+        } else {
+            document.getElementById("submitButton").className = "button disabled"
+            document.getElementById("submitButton").onclick = function () {
+                alert("Please match the correct formats.")
+            }
+        }
+    }
+
+    // function checkIfDateValid() {
+    //     var elem = document.getElementById("dateSelect");
+
+    //     var pattern = elem.getAttribute("pattern");
+    //     var re = new RegExp(pattern);
+    //     if (re.test(elem.value)) {
+    //         elem.style = "border-style:solid; border-color: green"
+    //         return true
+    //     } else {
+    //         elem.style = "border-style:solid; border-color: red; border-width: 2px;"
+    //         return false
+    //     }
+    // }
+
+    function checkPriceValidity() {
+        var elem = document.getElementById("price")
+        var notValid = (elem.value == "" ? true : false)
+        if (notValid || parseInt(elem.value) > 100 || parseInt(elem.value) < 0) {
+            elem.style = "border-style:solid; border-color: red; border-width: 2px;"
+            return false;
+        } else {
+            elem.style = "border-style:solid; border-color: green; border-width: 2px;"
+            return true;
+        }
+    }
+
+    function checkInputFieldValidity(inputFieldID) {
+        var elem = document.getElementById(inputFieldID)
+        var notValid = (elem.value == "" ? true : false)
+        if (notValid) {
+            elem.style = "border-style:solid; border-color: red; border-width: 2px;"
+            return false;
+        } else {
+            elem.style = "border-style:solid; border-color: green; border-width: 2px;"
+            return true;
+        }
+    }
+
+    document.getElementById("description").value = ""
+    setInterval(checkValid)
 
 </script>
 

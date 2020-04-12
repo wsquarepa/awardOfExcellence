@@ -22,6 +22,7 @@
         firebase.initializeApp(firebaseConfig);
         //firebase.analytics();
         var database = firebase.database()
+
     </script>
     <style>
         .wrapper {
@@ -149,16 +150,18 @@
             position: relative;
             top: -857px;
         }
+
     </style>
 </head>
 <div id="itemInfo" hidden>
     <h1 id="itemName">Unloaded Element</h1>
     <h3 id="itemDescription">Unloaded Element</h3>
-    <img id="imageHolder">
+    <img id="imageHolder" height="300">
     <p id="seller">Unloaded Element</p>
-    <p id="currentBidValue">Unloaded Element</p> <br>
-    <p id="numOfBidders">Unloaded Element</p> <br>
-    <button class="button" onclick="bid()" ><span id="bidButton">Create!</span></button>
+    <p id="hoursUntilExpiry">Unloaded Element</p>
+    <p id="currentBidValue">Unloaded Element</p>
+    <p id="numOfBidders">Unloaded Element</p>
+    <button class="button" onclick="bid()"><span id="bidButton">Bid!</span></button>
 </div>
 <div class="spin-container" id="spin">
     <div class="spin" id="loader"></div>
@@ -169,16 +172,19 @@
 </div>
 <script>
     var selectedItem = ""
+
     function getUrlVars() {
         var vars = {};
-        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
             vars[key] = value.replace("%20", " ")
         });
         return vars;
     }
 
     selectedItem = getUrlVars()["selectedItem"]
-    var info, imgUrl;
+    var info, imgUrl, expiryTimeMS
+    var expiryTime = new Date();
+
     function init() {
         var loadingSpinner = document.getElementById("spin")
         var nameDisplay = document.getElementById("itemName")
@@ -189,7 +195,8 @@
         var bidButton = document.getElementById("bidButton")
         var loadingSpinner = document.getElementById("spin")
         var imageHolder = document.getElementById("imageHolder")
-        return database.ref('/auctionItems/' + selectedItem).on('value', function(snapshot) {
+        var expiryHoursHolder = document.getElementById("hoursUntilExpiry")
+        return database.ref('/auctionItems/' + selectedItem).on('value', function (snapshot) {
             document.getElementById("itemInfo").hidden = false
             loadingSpinner.hidden = true
             info = snapshot.val()
@@ -199,21 +206,47 @@
             if (imgUrl === undefined) {
                 imgUrl = ""
             }
+            expiryTime = new Date(parseInt(info["expires"]))
+            var now = new Date()
+            expiryTimeMS = parseInt(info["expires"])
+
             descriptionDisplay.innerHTML = "Description: " + info["itemDescription"]
-            sellerDisplay.innerHTML = "Seller: " + splitEmail(info["emailOfSeller"]) [0]
+            sellerDisplay.innerHTML = "Seller: " + splitEmail(info["emailOfSeller"])[0]
             currentBidValueDisplay.innerHTML = "Current Price: <br> $" + info["itemPrice"]
-            currentNumberOfBiddersDisplay.innerHTML = info["bids"] + " Bid" + (info["bids"] == 1? "":"s")
-            bidButton.innerHTML = "Increase Bid to $" + (parseInt(info["itemPrice"]) + 5).toString(10)
+            currentNumberOfBiddersDisplay.innerHTML = info["bids"] + " Bid" + (info["bids"] == 1 ? "" : "s")
+            bidButton.innerHTML = "Increase Price to $" + (parseInt(info["itemPrice"]) + 5).toString(10)
+            console.log(expiryTime)
+            setInterval(updateExpiryTime)
         });
     }
 
+    function updateExpiryTime() {
+        var expiryHoursHolder = document.getElementById("hoursUntilExpiry")
+        var today = new Date();
+        var diffMs = (expiryTime - today); // milliseconds between now & Expiry Time
+        var diffDays = Math.floor(diffMs / 86400000); // days
+        var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+        var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+        if (diffMins % 60 == 0) {
+            diffMins = 0
+            diffHrs += (diffMins / 60)
+        } else if (diffHrs % 24 == 0) {
+            diffHrs = 0
+            diffDays += (diffHrs / 24)
+        }
+        expiryHoursHolder.innerHTML = "Bidding ends in " + diffDays + " Days, " + diffHrs + " Hours and " + diffMins +
+            " Minutes."
+    }
+
     function bid(moneyValue) {
+        var expiryTime = new Date(info["expires"])
         database.ref('auctionItems/' + selectedItem).set({
             emailOfSeller: info["emailOfSeller"],
             itemDescription: info["itemDescription"],
             itemPrice: (parseInt(info["itemPrice"]) + 5).toString(10),
             bids: (parseInt(info["bids"]) + 1).toString(10),
-            imgUrl:imgUrl
+            imgUrl: imgUrl,
+            expires: expiryTimeMS
         });
     }
 
@@ -222,12 +255,12 @@
         var name = nameParts.length == 2 ? nameParts[0] : null;
         return nameParts
     }
-    
-    
+
 </script>
 <script id="mainScript">
-    setTimeout(function() {
+    setTimeout(function () {
         init()
     }, 500)
     document.getElementById("mainScript").remove()
+
 </script>
