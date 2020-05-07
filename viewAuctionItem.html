@@ -1,4 +1,6 @@
 <head>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">  
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
 
@@ -153,23 +155,25 @@
 
     </style>
 </head>
-<div id="itemInfo" hidden>
-    <h1 id="itemName">Unloaded Element</h1>
-    <h3 id="itemDescription">Unloaded Element</h3>
-    <img id="imageHolder" height="300">
-    <p id="seller">Unloaded Element</p>
-    <p id="hoursUntilExpiry">Unloaded Element</p>
-    <p id="currentBidValue">Unloaded Element</p>
-    <p id="numOfBidders">Unloaded Element</p>
-    <button class="button" onclick="bid()"><span id="bidButton">Bid!</span></button>
-</div>
-<div class="spin-container" id="spin">
-    <div class="spin" id="loader"></div>
-    <div class="spin" id="loader2"></div>
-    <div class="spin" id="loader3"></div>
-    <div class="spin" id="loader4"></div>
-    <span id="text">Loading...</span>
-</div>
+<center>
+    <div id="itemInfo" hidden>
+        <h1 id="itemName">Unloaded Element</h1>
+        <h3 id="itemDescription">Unloaded Element</h3>
+        <img id="imageHolder" height="300" src="no-image-image.jpg">
+        <p id="seller">Unloaded Element</p>
+        <p id="hoursUntilExpiry">Unloaded Element</p>
+        <p id="currentBidValue">Unloaded Element</p>
+        <p id="numOfBidders">Unloaded Element</p>
+        <button class="button" onclick="bid(localStorage.getItem('emailOfSeller'))"><span id="bidButton">Bid!</span></button>
+    </div>
+    <div class="spin-container" id="spin">
+        <div class="spin" id="loader"></div>
+        <div class="spin" id="loader2"></div>
+        <div class="spin" id="loader3"></div>
+        <div class="spin" id="loader4"></div>
+        <span id="text">Loading...</span>
+    </div>
+</center>
 <script>
     var selectedItem = ""
 
@@ -202,10 +206,10 @@
             info = snapshot.val()
             nameDisplay.innerHTML = selectedItem
             imgUrl = info["imgUrl"]
-            imageHolder.src = imgUrl
             if (imgUrl === undefined) {
-                imgUrl = ""
+                imgUrl = "no-image-image.jpg"
             }
+            imageHolder.src = imgUrl
             expiryTime = new Date(parseInt(info["expires"]))
             var now = new Date()
             expiryTimeMS = parseInt(info["expires"])
@@ -236,15 +240,19 @@
         }
         expiryHoursHolder.innerHTML = "Bidding ends in " + diffDays + " Days, " + diffHrs + " Hours and " + diffMins +
             " Minutes."
+        if (diffMins < 1 && diffHrs < 1 && diffDays < 1) {
+            console.log("delete!")
+        }
     }
 
-    function bid(moneyValue) {
+    function bid(bidder) {
         var expiryTime = new Date(info["expires"])
         database.ref('auctionItems/' + selectedItem).set({
             emailOfSeller: info["emailOfSeller"],
             itemDescription: info["itemDescription"],
             itemPrice: (parseInt(info["itemPrice"]) + 5).toString(10),
             bids: (parseInt(info["bids"]) + 1).toString(10),
+            currentBidder: bidder,
             imgUrl: imgUrl,
             expires: expiryTimeMS
         });

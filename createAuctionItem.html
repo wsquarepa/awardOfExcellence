@@ -1,5 +1,7 @@
 <head>
     <title>Pacific Academy Auction Site</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">   
     <link rel="icon" href="logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -236,7 +238,7 @@
 
     </script>
     <script rel="javascript" type="text/javascript" href="js/jquery-1.11.3.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- <script async src="https://imgbb.com/upload.js" data-sibling="label" data-palette="blue"></script> -->
 </head>
 <h1 contenteditable="true">Create an auction item!</h1>
@@ -284,7 +286,7 @@
 
 <script>
     var itemNameGlobal, itemDescriptionGlobal, itemPriceGlobal, emailOfSellerGlobal;
-    var imgUrl = ""
+    var imgUrl = "no-image-image.jpg"
     var img = false
     var expiryTime = new Date()
 
@@ -293,7 +295,7 @@
         var data = document.getElementById("timeOptions").value
         var selectedMs = parseInt(data) * 3600 * 1000
         expiryTime = now.getTime() + selectedMs
-        console.log(new Date(expiryTime))
+        console.log(new Date(expiryTime).toString())
     }
 
     function writeItemData(itemName, itemDescription, itemPrice, emailOfSeller, imageUrl) {
@@ -320,7 +322,8 @@
                             itemPrice: itemPriceGlobal,
                             imgUrl: imageUrl,
                             bids: 0,
-                            expires:expiryTime
+                            expires:expiryTime.toString(),
+                            currentBidder:""
                         });
                     } catch(e) {
                         setTimeout(function() {
@@ -403,6 +406,7 @@
             imgUrl = jx.data.url
             displayImage()
         });
+        console.log("stuff happened.")
 
     }
 
@@ -463,6 +467,7 @@
 
     document.getElementById("description").value = ""
     setInterval(checkValid)
+    selected()
 
 </script>
 

@@ -1,4 +1,6 @@
 <head>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">  
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
 
@@ -25,6 +27,13 @@
 
     </script>
     <style>
+        body {
+            background-image: url("https://www.banfflakelouise.com/sites/default/files/styles/l_1600_12x6/public/lead/collection/lake-louise-canoeing-banff-alberta.jpg?itok=zL9vt-Db");
+            background-repeat: no-repeat;
+            background-size: cover;
+            overflow: hidden;
+        }
+
         .spin-container {
             text-align: center;
             margin-top: 100px;
@@ -102,15 +111,50 @@
             top: -857px;
         }
 
+        .fields {
+            text-align: center;
+        }
+
+        input {
+            height: 50px;
+            width: 500px;
+            text-align: center;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        input:hover {
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .inputField {
+            background-color: #000000;
+            color: white;
+            font-family: monospace;
+        }
+
+        .inputField:hover {
+            background-color: #ffffff;
+            color: black;
+        }
+
+        .headerWhite {
+            color: white;
+        }
+
     </style>
 </head>
-<h1>Sign up to buy and sell things.</h1>
-<div id="form">
-    <input type="text" placeholder="email" id="email"> <br>
-    <input type="password" placeholder="password" id="password"> <br>
-    <input type="password" placeholder="Confirm password" id="passwordConf"> <br>
-    <button onClick="signUp()" type="button">Sign Up!</button>
-</div>
+<center class="fields">
+    <h1 class="headerWhite">Sign up to buy and sell things.</h1>
+
+    <div id="form">
+        <input type="text" placeholder="email" id="email" class="inputField"> <br>
+        <input type="password" placeholder="password" id="password" class="inputField"> <br>
+        <input type="password" placeholder="Confirm password" id="passwordConf" class="inputField"> <br>
+        <button onClick="signUp()" type="button">Sign Up!</button>
+    </div>
+</center>
 <div class="spin-container" id="spin" hidden>
     <div class="spin" id="loader"></div>
     <div class="spin" id="loader2"></div>
@@ -167,7 +211,8 @@
                             loadingText.innerHTML = "Finalizing..."
                             localStorage.setItem("userEmail", email)
                             setTimeout(function () {
-                                window.location.href = "viewAuctionItems.html"
+                                window.location.href =
+                                    "viewAuctionItems.html"
                             }, 1000)
                         }, 500)
                     }, 500)

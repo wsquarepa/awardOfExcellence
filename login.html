@@ -26,15 +26,20 @@
 
     <style>
         a {
-            position: absolute;
             cursor: pointer;
             color: blue;
         }
 
         a:hover {
-            position: absolute;
             color: red;
             cursor: pointer;
+        }
+
+        body {
+            background-image: url("https://www.banfflakelouise.com/sites/default/files/styles/l_1600_12x6/public/lead/collection/lake-louise-canoeing-banff-alberta.jpg?itok=zL9vt-Db");
+            background-repeat: no-repeat;
+            background-size: cover;
+            overflow: hidden;
         }
 
         .spin-container {
@@ -107,26 +112,59 @@
         }
 
         #text {
-            color: #000000;
+            color: #ffffff;
             font-family: Arial;
             font-size: 15px;
             position: relative;
             top: -857px;
         }
 
+        .fields {
+            text-align: center;
+        }
+
+        input {
+            height: 50px;
+            width: 500px;
+            text-align: center;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        input:hover {
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .inputField {
+            background-color: #000000;
+            color: white;
+            font-family: monospace;
+        }
+
+        .inputField:hover {
+            background-color: #ffffff;
+            color: black;
+        }
+
+        .headerWhite {
+            color: white;
+        }
+
     </style>
 
 </head>
-
-<h1>Log in to buy and sell things.</h1>
-<div id="form">
-    <form action="viewAuctionItems.html">
-        <input type="text" placeholder="email" id="username"> <br>
-        <input type="password" placeholder="password" id="password"> <br>
-        <button onclick="login()" type="button">Login</button>
-    </form>
-    <a href="signUp.html"> Sign up instead</a>
-</div>
+<center class="fields">
+    <h1 class="headerWhite">Log in to buy and sell things.</h1>
+    <div id="form">
+        <form action="viewAuctionItems.html">
+            <input type="text" placeholder="email" id="username" class="inputField"> <br>
+            <input type="password" placeholder="password" id="password" class="inputField"> <br>
+            <button onclick="login()" type="button">Login</button>
+        </form>
+    </div>
+    <a href="signUp.html">Sign up instead</a>
+</center>
 <div class="spin-container" id="spin" hidden>
     <div class="spin" id="loader"></div>
     <div class="spin" id="loader2"></div>
@@ -140,9 +178,14 @@
 
     function login() {
         email = document.getElementById("username").value
-        var password = document.getElementById("password").value
-        var username = splitEmail(email)[0]
-        fetchData(username, password)
+        if (email.endsWith("@mypacificacademy.net")) {
+            var password = document.getElementById("password").value
+            var username = splitEmail(email)[0]
+            fetchData(username, password)
+        } else {
+            alert("Enter a valid email.")
+        }
+        
     }
 
     function fetchData(userId, passwordInput) {
