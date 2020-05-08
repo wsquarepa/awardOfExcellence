@@ -164,7 +164,7 @@
         <p id="hoursUntilExpiry">Unloaded Element</p>
         <p id="currentBidValue">Unloaded Element</p>
         <p id="numOfBidders">Unloaded Element</p>
-        <button class="button" onclick="bid(localStorage.getItem('emailOfSeller'))"><span id="bidButton">Bid!</span></button>
+        <button class="button" onclick="bid(localStorage.getItem('userEmail'))"><span id="bidButton">Bid!</span></button>
     </div>
     <div class="spin-container" id="spin">
         <div class="spin" id="loader"></div>
@@ -176,6 +176,7 @@
 </center>
 <script>
     var selectedItem = ""
+    var key = ""
 
     function getUrlVars() {
         var vars = {};
@@ -219,6 +220,7 @@
             currentBidValueDisplay.innerHTML = "Current Price: <br> $" + info["itemPrice"]
             currentNumberOfBiddersDisplay.innerHTML = info["bids"] + " Bid" + (info["bids"] == 1 ? "" : "s")
             bidButton.innerHTML = "Increase Price to $" + (parseInt(info["itemPrice"]) + 5).toString(10)
+            key = info["key"]
             console.log(expiryTime)
             setInterval(updateExpiryTime)
         });
@@ -251,6 +253,7 @@
             emailOfSeller: info["emailOfSeller"],
             itemDescription: info["itemDescription"],
             itemPrice: (parseInt(info["itemPrice"]) + 5).toString(10),
+            key: key,
             bids: (parseInt(info["bids"]) + 1).toString(10),
             currentBidder: bidder,
             imgUrl: imgUrl,

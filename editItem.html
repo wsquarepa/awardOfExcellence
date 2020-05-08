@@ -262,7 +262,8 @@
     <script rel="javascript" type="text/javascript" href="js/jquery-1.11.3.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
-<h1 class="centered">Create an auction item!</h1>
+
+<h1 class="centered">Edit your auction item!</h1>
 
 <div id="itemCredentials" class="centered">
     Item Name: <br> <input type="text" name="name" placeholder="Item Name" id="name" class="inputField" required> <br>
@@ -290,7 +291,8 @@
         onchange="fileChange()"><br>
     <img id="imageHolder" src="no-image-image.jpg" height="200" placeholder="Your image appears here."> <br>
     Please make sure the image appears above.<br>
-    <button class="button disabled" onclick="submitToServer()" id="submitButton"><span>Create!</span></button>
+    <button class="button disabled" onclick="submitToServer()" id="submitButton"><span>Edit!</span></button> <br>
+    <button class="button" onclick="deleteItem()" id="editButton"><span>Delete!</span></button>
 </div>
 
 <div class="spin-container" id="spin" hidden>
@@ -301,12 +303,69 @@
     <span id="text">Unloaded</span>
 </div>
 
-
 <script>
     var itemNameGlobal, itemDescriptionGlobal, itemPriceGlobal, emailOfSellerGlobal;
     var imgUrl = "no-image-image.jpg"
     var img = false
     var expiryTime = new Date()
+
+    function init() {
+        var urlVars = getUrlVars()
+        var itemName = urlVars["itemName"].replace("%20", " ")
+        return firebase.database().ref('/auctionItems/' + itemName).once('value').then(function(snapshot) {
+            var item = (snapshot.val()) || 'Item Invalid';
+            console.log(item)
+            if (item != "Item Invalid") {
+                if (urlVars["key"] != item["key"]) {
+                    clearInterval(checkerInterval)
+                    document.write("<h1>403: FORBIDDEN</h1> <br> <p style='font-size:14px'>Forbidden: You are not allowed to edit this item! </p>" + 
+                    "<button onclick='location = `viewAuctionItems.html`'>Go Back</button>")
+                } else {
+                    var name = document.getElementById("name")
+                    var description = document.getElementById("description")
+                    var price = document.getElementById("price")
+                    var image = document.getElementById("imageHolder")
+                    
+                    name.value = itemName
+                    description.value = item["itemDescription"]
+                    price.value = item["itemPrice"] 
+                    image.src = item["imgUrl"]
+                }
+            } else {
+                alert("This item does not exist.")
+            }
+        });
+    }
+
+    function makeid(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
+    function deleteItem() {
+        var id = makeid(5)
+        var pin = prompt("Are you sure you want to delete your item? If so, copy n' paste this: " + id)
+        var urlVars = getUrlVars()
+        var itemName = urlVars["itemName"].replace("%20", " ")
+        if (pin == id) {
+            return firebase.database().ref('/auctionItems/' + itemName).remove().then(function() {
+                location = "viewAuctionItems.html"
+            })
+        }
+    }
+
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+            vars[key] = value.replace("%20", " ")
+        });
+        return vars;
+    }
 
     function selected() {
         var now = new Date()
@@ -486,7 +545,8 @@
     }
 
     document.getElementById("description").value = ""
-    setInterval(checkValid)
+    var checkerInterval = setInterval(checkValid)
     selected()
+    init()
 
 </script>

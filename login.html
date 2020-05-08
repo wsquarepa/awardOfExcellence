@@ -191,9 +191,11 @@
     function fetchData(userId, passwordInput) {
         return database.ref('/users/' + userId).once('value').then(function (snapshot) {
             var password = (snapshot.val() && snapshot.val().password) || 'Anonymous';
+            var key = (snapshot.val() && snapshot.val().key) || 'NA KEY'
             switch (passwordInput) {
                 case password:
                     localStorage.setItem("userEmail", email)
+                    localStorage.setItem("auctionKey", key)
                     document.getElementById("form").hidden = true;
                     document.getElementById("spin").hidden = false
                     setTimeout(function () {

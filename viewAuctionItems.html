@@ -139,6 +139,8 @@
             background-color: #e2e2e2;
             margin-bottom: 20px;
             position: relative;
+            width: 283px;
+            height: 238px;
         }
 
         .card:hover {
@@ -177,6 +179,14 @@
             width: 50%
         }
 
+        .anchorTop {
+            text-align:center;
+            top: 40px;
+        }
+
+        .anchorBottomParent {
+            bottom: 30px;
+        }
 
     </style>
     <!-- The core Firebase JS SDK is always required and must be listed first -->
@@ -246,9 +256,10 @@
                     var breakNode1 = document.createElement("br")
                     var titleNode = document.createElement("h3")
                     var imageNode = document.createElement("img")
+                    var descriptionNode = document.createElement("p")
                     var textNodeTitle = document.createTextNode(Object.keys(items)[i])
                     var textNodeDescription = document.createTextNode("Description: " + items[Object.keys(
-                        items)[i]]["itemDescription"].substring(0, 10) + "...")
+                        items)[i]]["itemDescription"].substring(0, 10) + "...") //here
                     var numberOfBidsNode = document.createElement('div')
                     var cushNode = document.createElement('div')
                     var bidsTextNode = document.createTextNode(items[Object.keys(items)[i]]["bids"].toString() +
@@ -258,12 +269,23 @@
                     var imgUrl = items[Object.keys(items)[i]]["imgUrl"]
                     itemsList.push(cardNode)
                     columnNode.className = "column"
+                    descriptionNode.innerHTML = "Description: " + items[Object.keys(
+                        items)[i]]["itemDescription"].substring(0, 10) + "..." //here
+                    descriptionNode.className = "anchorBottomParent" //here
                     cardNode.className = "card"
                     numberOfBidsNode.className = "bidsViewBox"
                     cushNode.className = "cushViewBox"
                     cardNode.id = textNodeTitle.data
-                    cardNode.onclick = function () {
-                        respond(this)
+                    var auctionKey = localStorage.getItem("auctionKey")
+                    var dataKey = (items[Object.keys(items)[i]]["key"])
+                    if (auctionKey == dataKey) {
+                        cardNode.onclick = function () {
+                            editItem(this)
+                        }
+                    } else {
+                        cardNode.onclick = function () {
+                            respond(this)
+                        }
                     }
                     if (imgUrl != "") {
                         imageNode.src = imgUrl
@@ -279,7 +301,7 @@
                     cardNode.appendChild(breakNode1)
                     cardNode.appendChild(imageNode)
                     cardNode.appendChild(breakNode1)
-                    cardNode.appendChild(textNodeDescription)
+                    cardNode.appendChild(descriptionNode) //here
                     columnNode.appendChild(cardNode)
                     cards.appendChild(columnNode)
                 }
@@ -287,6 +309,10 @@
         });
     }
     console.log(localStorage.getItem("userEmail"))
+
+    function editItem(cardObject) {
+        location = "editItem.html?itemName=" + cardObject.id + "&key=" + localStorage.getItem("auctionKey")
+    }
 
     function loginAlert() {
         if (localStorage.getItem("userEmail") === null) {

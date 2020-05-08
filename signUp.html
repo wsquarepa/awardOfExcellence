@@ -1,6 +1,6 @@
 <head>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
 
@@ -192,6 +192,16 @@
 
     }
 
+    function makeid(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
     function writeUserData(userId, email, password) {
         var loadingText = document.getElementById('text')
         loadingText.innerHTML = "Initializing connection..."
@@ -203,13 +213,16 @@
                     loadingText.innerHTML = "Creating account..."
                     setTimeout(function () {
                         loadingText.innerHTML = "Adding credentials <br> to account..."
+                        var key = makeid(20)
                         database.ref('users/' + userId).set({
                             email: email,
-                            password: password
+                            password: password,
+                            userKey: key
                         });
                         setTimeout(function () {
                             loadingText.innerHTML = "Finalizing..."
                             localStorage.setItem("userEmail", email)
+                            localStorage.setItem("auctionKey", key)
                             setTimeout(function () {
                                 window.location.href =
                                     "viewAuctionItems.html"
