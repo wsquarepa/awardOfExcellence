@@ -237,6 +237,18 @@
             width: 500px;
             height: 50px;
         }
+
+        a {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: blue;
+        }
+
+        a:hover {
+            color: red;
+        }
+
     </style>
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
 
@@ -263,6 +275,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 <h1 class="centered">Create an auction item!</h1>
+<a href="viewAuctionItems.html">Go back</a>
 
 <div id="itemCredentials" class="centered">
     Item Name: <br> <input type="text" name="name" placeholder="Item Name" id="name" class="inputField" required> <br>
@@ -276,7 +289,7 @@
         <option value="1">In 1 hour</option>
         <option value="6">In 6 hours</option>
         <option value="12">In 12 hours</option>
-        <option value="24">In 1 day</option>
+        <option value="24" selected="selected">In 1 day</option>
         <option value="48">In 2 days</option>
         <option value="72">In 3 days</option>
         <option value="96">In 4 days</option>

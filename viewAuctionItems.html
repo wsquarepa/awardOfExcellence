@@ -188,6 +188,17 @@
             bottom: 30px;
         }
 
+        a {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: blue;
+        }
+
+        a:hover {
+            color: red;
+        }
+
     </style>
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
@@ -218,6 +229,7 @@
 
 <h1 align="center"> Auctioned Items </h1>
 <h3 align="center"> This is where you can buy stuff! </h3>
+<a href="logout.html">Log out</a>
 <center>
     <button class="button" id="createButton" style="vertical-align:middle" onclick="location.href='createAuctionItem.html'"><span>Create
             Auction Item</span></button>

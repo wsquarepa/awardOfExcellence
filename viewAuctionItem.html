@@ -153,8 +153,21 @@
             top: -857px;
         }
 
+        a {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: blue;
+        }
+
+        a:hover {
+            color: red;
+        }
+
+
     </style>
 </head>
+<a href="viewAuctionItems.html">Go back</a>
 <center>
     <div id="itemInfo" hidden>
         <h1 id="itemName">Unloaded Element</h1>
@@ -243,7 +256,8 @@
         expiryHoursHolder.innerHTML = "Bidding ends in " + diffDays + " Days, " + diffHrs + " Hours and " + diffMins +
             " Minutes."
         if (diffMins < 1 && diffHrs < 1 && diffDays < 1) {
-            console.log("delete!")
+            expiryHoursHolder.innerHTML = "Bidding has ended!"
+            bid = function() {alert("Bidding has ended, you can't bid anymore.")}
         }
     }
 

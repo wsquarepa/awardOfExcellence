@@ -237,6 +237,18 @@
             width: 500px;
             height: 50px;
         }
+
+        a {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: blue;
+        }
+
+        a:hover {
+            color: red;
+        }
+
     </style>
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
 
@@ -264,16 +276,17 @@
 </head>
 
 <h1 class="centered">Edit your auction item!</h1>
+<a href="viewAuctionItems.html">Go back</a>
 
 <div id="itemCredentials" class="centered">
     Item Name: <br> <input type="text" name="name" placeholder="Item Name" id="name" class="inputField" required> <br>
     <label for="description">Item Discription: </label> <br> <textarea type="text" name="description" placeholder="Item Description" id="description"
         required> </textarea> <br>
     Item Price (Must be a positive integer less than or equal to 100): <br> $<input type="number" name="price"
-        placeholder="Item Price" id="price" required> </input> <br>
+        placeholder="Item Price" id="price" class="disabled" readonly required> </input> <br>
     <label for="timeOptions">Choose an expiry time:</label>
 
-    <select id="timeOptions" onchange="selected()">
+    <select id="timeOptions" onchange="selected()" aria-readonly="true" class="disabled">
         <option value="1">In 1 hour</option>
         <option value="6">In 6 hours</option>
         <option value="12">In 12 hours</option>
@@ -330,6 +343,7 @@
                     description.value = item["itemDescription"]
                     price.value = item["itemPrice"] 
                     image.src = item["imgUrl"]
+                    imgUrl = item["imgUrl"]
                 }
             } else {
                 alert("This item does not exist.")
@@ -390,7 +404,7 @@
             setTimeout(function () {
                 loadingText.innerHTML = "Authorizing access <br> to database..."
                 setTimeout(function () {
-                    loadingText.innerHTML = "Creating item..."
+                    loadingText.innerHTML = "Editing item..."
                     var now = new Date()
                     try {
                         database.ref('auctionItems/' + itemNameGlobal).set({
@@ -410,7 +424,7 @@
                         }, 100)
                     }
                     setTimeout(function () {
-                        loadingText.innerHTML = "Finalizing creation..."
+                        loadingText.innerHTML = "Finalizing..."
                         setTimeout(function () {
                             window.location.href = "viewAuctionItems.html"
                         }, 1000)
@@ -522,14 +536,8 @@
 
     function checkPriceValidity() {
         var elem = document.getElementById("price")
-        var notValid = (elem.value == "" ? true : false)
-        if (notValid || parseInt(elem.value) > 100 || parseInt(elem.value) < 0) {
-            elem.style = "border-style:solid; border-color: red; border-width: 2px;"
-            return false;
-        } else {
-            elem.style = "border-style:solid; border-color: green; border-width: 2px;"
-            return true;
-        }
+        elem.style = "border-style:solid; border-color: green; border-width: 2px;"
+        return true;
     }
 
     function checkInputFieldValidity(inputFieldID) {
