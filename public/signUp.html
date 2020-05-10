@@ -1,9 +1,14 @@
 <head>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
 
     <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
     <script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-database.js"></script>
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
 
     <script>
         // Your web app's Firebase configuration
@@ -23,18 +28,7 @@
         var database = firebase.database()
 
     </script>
-
     <style>
-        a {
-            cursor: pointer;
-            color: blue;
-        }
-
-        a:hover {
-            color: red;
-            cursor: pointer;
-        }
-
         body {
             background-image: url("https://www.banfflakelouise.com/sites/default/files/styles/l_1600_12x6/public/lead/collection/lake-louise-canoeing-banff-alberta.jpg?itok=zL9vt-Db");
             background-repeat: no-repeat;
@@ -112,7 +106,7 @@
         }
 
         #text {
-            color: #ffffff;
+            color: #000000;
             font-family: Arial;
             font-size: 15px;
             position: relative;
@@ -152,70 +146,96 @@
         }
 
     </style>
-
 </head>
 <center class="fields">
-    <h1 class="headerWhite">Log in to buy and sell things.</h1>
+    <h1 class="headerWhite">Sign up to buy and sell things.</h1>
+
     <div id="form">
-        <form action="viewAuctionItems.html">
-            <input type="text" placeholder="email" id="username" class="inputField"> <br>
-            <input type="password" placeholder="password" id="password" class="inputField"> <br>
-            <button onclick="login()" type="button">Login</button>
-        </form>
+        <input type="text" placeholder="email" id="email" class="inputField"> <br>
+        <input type="password" placeholder="password" id="password" class="inputField"> <br>
+        <input type="password" placeholder="Confirm password" id="passwordConf" class="inputField"> <br>
+        <button onClick="signUp()" type="button">Sign Up!</button>
     </div>
-    <a href="signUp.html">Sign up instead</a>
 </center>
 <div class="spin-container" id="spin" hidden>
     <div class="spin" id="loader"></div>
     <div class="spin" id="loader2"></div>
     <div class="spin" id="loader3"></div>
     <div class="spin" id="loader4"></div>
-    <span id="text">Logging you in...</span>
+    <span id="text">Unloaded</span>
 </div>
 
+
+
+<p id="passwordWrong"></p>
+
 <script>
-    var email;
-
-    function login() {
-        email = document.getElementById("username").value
-        if (email.endsWith("@mypacificacademy.net")) {
-            var password = document.getElementById("password").value
-            var username = splitEmail(email)[0]
-            fetchData(username, password)
+    function signUp() {
+        var email = document.getElementById("email").value
+        var password = document.getElementById("password").value
+        var passwordConf = document.getElementById("passwordConf").value
+        if (password != passwordConf) {
+            alert("Passwords do not match")
         } else {
-            alert("Enter a valid email.")
-        }
-        
-    }
-
-    function fetchData(userId, passwordInput) {
-        return database.ref('/users/' + userId).once('value').then(function (snapshot) {
-            var password = (snapshot.val() && snapshot.val().password) || 'Anonymous';
-            var key = (snapshot.val() && snapshot.val().userKey) || 'NA KEY'
-            switch (passwordInput) {
-                case password:
-                    localStorage.setItem("userEmail", email)
-                    localStorage.setItem("auctionKey", key)
-                    document.getElementById("form").hidden = true;
-                    document.getElementById("spin").hidden = false
-                    setTimeout(function () {
-                        window.location.href = "viewAuctionItems.html"
-                    }, 5000)
-                    break;
-                default:
-                    alert("Incorrect username or password.")
+            if (password != "") {
+                var nameParts = email.split("@");
+                var name = nameParts.length == 2 ? nameParts[0] : null;
+                document.getElementById("form").hidden = true;
+                document.getElementById("spin").hidden = false
+                if (nameParts[0] != "") {
+                    writeUserData(nameParts[0], email, password)
+                } else {
+                    alert("Invalid email")
+                }
+            } else {
+                alert("Blank passwords are not accepted.")
             }
-        });
+            
+        }
+
     }
 
-    function splitEmail(email) {
-        var nameParts = email.split("@");
-        var name = nameParts.length == 2 ? nameParts[0] : null;
-        return nameParts
+    function makeid(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
 
-    if (localStorage.getItem("userEmail") !== null) {
-        location = "viewAuctionItems.html"
+    function writeUserData(userId, email, password) {
+        var loadingText = document.getElementById('text')
+        loadingText.innerHTML = "Initializing connection..."
+        setTimeout(function () {
+            loadingText.innerHTML = "Connecting to database..."
+            setTimeout(function () {
+                loadingText.innerHTML = "Authorizing access <br> to database..."
+                setTimeout(function () {
+                    loadingText.innerHTML = "Creating account..."
+                    setTimeout(function () {
+                        loadingText.innerHTML = "Adding credentials <br> to account..."
+                        var key = makeid(20)
+                        database.ref('users/' + userId).set({
+                            email: email,
+                            password: password,
+                            userKey: key
+                        });
+                        setTimeout(function () {
+                            loadingText.innerHTML = "Finalizing..."
+                            localStorage.setItem("userEmail", email)
+                            localStorage.setItem("auctionKey", key)
+                            $( "#text" ).load( "https://us-central1-paauctionsite.cloudfunctions.net/accountCreated?dest=" + email);
+                            setTimeout(function () {
+                                window.location.href =
+                                    "viewAuctionItems.html"
+                            }, 1000)
+                        }, 500)
+                    }, 500)
+                }, 1000)
+            }, 2000)
+        }, 10)
     }
 
 </script>
